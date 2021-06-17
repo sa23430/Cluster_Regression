@@ -1,0 +1,61 @@
+---
+title: "Final Project"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+```{r}
+library(flexmix)
+```
+
+Running using GLM model to predict spending score with all features. 
+```{r}
+dta <- read.csv("datasets_42674_74935_Mall_Customers.csv")
+
+model0 <- glm(formula = SpendingScore ~ IncomeInK + Age + Gender, family = gaussian, data = dta)
+
+summary(model0)
+
+intercept = summary(model0)$coefficients[1][1]
+coef_income = summary(model0)$coefficients[2][1]
+coef_age = summary(model0)$coefficients[3][1]
+coef_gender = summary(model0)$coefficients[4][1]
+
+gender_binary = as.numeric(factor(dta$Gender)) - 1
+
+plot(intercept + coef_income*dta$IncomeInK + coef_age*dta$Age + coef_gender*gender_binary, dta$SpendingScore)
+lines(intercept + coef_income*dta$IncomeInK + coef_age*dta$Age + coef_gender*gender_binary, intercept + coef_income*dta$IncomeInK + coef_age*dta$Age + coef_gender*gender_binary)
+```
+As you can see the fit is very poor. 
+
+Now using flexmix package to create clusters of data and then doing the regression line to predict spending score. 
+
+```{r}
+ex <- flexmix(SpendingScore ~ IncomeInK + Age + Gender, data=dta, k=2)
+
+summary(refit(ex))
+
+head(posterior(ex))
+
+head(fitted(ex))
+
+plot(fitted(ex)[1:200,1]*posterior(ex)[1:200,1] + fitted(ex)[1:200,2]*posterior(ex)[1:200,2], dta$SpendingScore)
+lines(fitted(ex)[1:200,1]*posterior(ex)[1:200,1] + fitted(ex)[1:200,2]*posterior(ex)[1:200,2], fitted(ex)[1:200,1]*posterior(ex)[1:200,1] + fitted(ex)[1:200,2]*posterior(ex)[1:200,2])
+```
+
+Better fit than regular GLM. 
+
+
+Now creating 3 clusters and then doing the regression. 3 clusters fit looks much better thatn 2 clusters fit!
+
+```{r}
+ex <- flexmix(SpendingScore ~ IncomeInK + Age + Gender, data=dta, k=3)
+
+summary(refit(ex))
+
+plot(fitted(ex)[1:200,1]*posterior(ex)[1:200,1] + fitted(ex)[1:200,2]*posterior(ex)[1:200,2] + fitted(ex)[1:200,3]*posterior(ex)[1:200,3], dta$SpendingScore)
+lines(fitted(ex)[1:200,1]*posterior(ex)[1:200,1] + fitted(ex)[1:200,2]*posterior(ex)[1:200,2] +fitted(ex)[1:200,3]*posterior(ex)[1:200,3], fitted(ex)[1:200,1]*posterior(ex)[1:200,1] + fitted(ex)[1:200,2]*posterior(ex)[1:200,2] +fitted(ex)[1:200,3]*posterior(ex)[1:200,3] )
+```
+
