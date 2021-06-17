@@ -5,11 +5,11 @@ This  provides information regarding clustering using R-package Flexmix. Flexmix
 ## Use of Generalized clusterwise linear regression
 when: we have access to limited number of predictors.      know other predictors would be useful but don't have access to them OR know other predictors would be useful but they are highly correlated.     assume the data set could be clustered efficiently based on those other predictors
 
-## Mall dataset file
+## Mall_customer_shopping notebook
   This dataset used Flexmix to cluster customers in to 2 or 3 segments based on their Age, Gender and Income bracket. The clusters are then used to predict spending score of that particular cluster.
   
   
-## Cluster_Regression file
+## cluster_regression notebook
 I implemented cluster regression algorithm in Python and tested it out using German Credit and Cars dataset!
 
   
